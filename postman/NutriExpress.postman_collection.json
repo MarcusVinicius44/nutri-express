@@ -1,0 +1,641 @@
+{
+  "info": {
+    "name": "NutriExpress - API de Pratos",
+    "description": "Roteiro de testes da Atividade Prática (API REST de Delivery de Comida Saudável). Execute em ordem com o Collection Runner: cada requisição tem testes que conferem o status HTTP e o corpo.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "0. Preparação - apaga pratos de execuções anteriores",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+              "// remove os pratos existentes para o roteiro começar do zero",
+              "pm.response.json().forEach(p => pm.sendRequest({url: pm.variables.replaceIn('{{baseUrl}}') + '/pratos/' + p.id, method: 'DELETE'}, () => {}));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/pratos",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "pratos"
+          ]
+        }
+      }
+    },
+    {
+      "name": "1. POST /pratos - cria prato vegano (201)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+              "pm.test(\"Retorna o prato criado com id\", () => pm.expect(pm.response.json().id).to.be.a('number'));",
+              "pm.test(\"Header Location aponta para o recurso\", () => pm.response.to.have.header('Location'));",
+              "pm.collectionVariables.set('idVegano', pm.response.json().id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/pratos",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "pratos"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nome\": \"Bowl de Quinoa\",\n  \"descricao\": \"Quinoa, grão-de-bico e legumes assados\",\n  \"valor\": 32.9,\n  \"categoria\": \"vegano\",\n  \"calorias\": 420,\n  \"quantidade\": 350,\n  \"unidadeMedida\": \"g\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "2. POST /pratos - cria prato fitness (201)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+              "pm.collectionVariables.set('idFitness', pm.response.json().id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/pratos",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "pratos"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nome\": \"Frango com Batata-Doce\",\n  \"descricao\": \"Peito de frango grelhado com batata-doce\",\n  \"valor\": 29.5,\n  \"categoria\": \"fitness\",\n  \"calorias\": 510,\n  \"quantidade\": 400,\n  \"unidadeMedida\": \"g\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "3. POST /pratos - cria sobremesa saudável (201)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+              "pm.collectionVariables.set('idSobremesa', pm.response.json().id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/pratos",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "pratos"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nome\": \"Mousse de Cacau\",\n  \"descricao\": \"Cacau 70% e biomassa de banana\",\n  \"valor\": 14.0,\n  \"categoria\": \"sobremesa saudável\",\n  \"calorias\": 180,\n  \"quantidade\": 120,\n  \"unidadeMedida\": \"ml\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "4. GET /pratos - lista os 3 pratos (200)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"Os 3 pratos aparecem\", () => pm.expect(pm.response.json().length).to.eql(3));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/pratos",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "pratos"
+          ]
+        }
+      }
+    },
+    {
+      "name": "5. GET /pratos/{id} - busca por ID (200)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"Retorna o prato pedido\", () => pm.expect(pm.response.json().nome).to.eql(\"Frango com Batata-Doce\"));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/pratos/{{idFitness}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "pratos",
+            "{{idFitness}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "6. GET /pratos/{id} - ID inexistente (404)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 404\", () => pm.response.to.have.status(404));",
+              "pm.test(\"Mensagem clara\", () => pm.expect(pm.response.json().mensagem).to.include(\"Prato não encontrado\"));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/pratos/999999",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "pratos",
+            "999999"
+          ]
+        }
+      }
+    },
+    {
+      "name": "7. GET /pratos?categoria=vegano - filtro por categoria (200)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"Só pratos veganos\", () => { const l = pm.response.json(); pm.expect(l.length).to.eql(1); l.forEach(p => pm.expect(p.categoria).to.eql(\"vegano\")); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/pratos?categoria=vegano",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "pratos"
+          ],
+          "query": [
+            {
+              "key": "categoria",
+              "value": "vegano"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "8. PUT /pratos/{id} - atualiza prato (200)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"Dados atualizados\", () => { const p = pm.response.json(); pm.expect(p.valor).to.eql(35.00); pm.expect(p.calorias).to.eql(450); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/pratos/{{idVegano}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "pratos",
+            "{{idVegano}}"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nome\": \"Bowl de Quinoa\",\n  \"descricao\": \"Quinoa, grão-de-bico, legumes assados e tahine\",\n  \"valor\": 35.0,\n  \"categoria\": \"vegano\",\n  \"calorias\": 450,\n  \"quantidade\": 350,\n  \"unidadeMedida\": \"g\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "9. PUT /pratos/{id} - ID inexistente (404)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 404\", () => pm.response.to.have.status(404));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/pratos/999999",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "pratos",
+            "999999"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nome\": \"Bowl de Quinoa\",\n  \"descricao\": \"Quinoa, grão-de-bico, legumes assados e tahine\",\n  \"valor\": 35.0,\n  \"categoria\": \"vegano\",\n  \"calorias\": 450,\n  \"quantidade\": 350,\n  \"unidadeMedida\": \"g\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "10. DELETE /pratos/{id} - remove prato (204)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 204\", () => pm.response.to.have.status(204));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/pratos/{{idSobremesa}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "pratos",
+            "{{idSobremesa}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "11. DELETE /pratos/{id} - ID inexistente (404)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 404\", () => pm.response.to.have.status(404));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/pratos/{{idSobremesa}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "pratos",
+            "{{idSobremesa}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "12. POST /pratos - DTO inválido, nome em branco (400)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+              "pm.test(\"Mapa de erros de validação\", () => { const e = pm.response.json().erros; pm.expect(e).to.have.property(\"nome\"); pm.expect(e).to.have.property(\"valor\"); pm.expect(e).to.have.property(\"categoria\"); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/pratos",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "pratos"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nome\": \"\",\n  \"valor\": -5,\n  \"categoria\": \"churrasco\",\n  \"calorias\": 100,\n  \"quantidade\": 200,\n  \"unidadeMedida\": \"kg\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "13. POST /pratos - regra de negócio: nome duplicado (409)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 409\", () => pm.response.to.have.status(409));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/pratos",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "pratos"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nome\": \"  frango com batata-doce \",\n  \"descricao\": \"Peito de frango grelhado com batata-doce\",\n  \"valor\": 29.5,\n  \"categoria\": \"fitness\",\n  \"calorias\": 510,\n  \"quantidade\": 400,\n  \"unidadeMedida\": \"g\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "14. [Bônus] PATCH /pratos/{id}/valor - altera só o valor (200)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"Só o valor mudou\", () => { const p = pm.response.json(); pm.expect(p.valor).to.eql(27.00); pm.expect(p.nome).to.eql(\"Frango com Batata-Doce\"); pm.expect(p.calorias).to.eql(510); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/pratos/{{idFitness}}/valor",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "pratos",
+            "{{idFitness}}",
+            "valor"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"valor\": 27.0\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "15. [Bônus] GET /pratos/calorias?max=500 - filtro por calorias (200)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"Todos com até 500 kcal\", () => pm.response.json().forEach(p => pm.expect(p.calorias).to.be.at.most(500)));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/pratos/calorias?max=500",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "pratos",
+            "calorias"
+          ],
+          "query": [
+            {
+              "key": "max",
+              "value": "500"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "16. [Bônus] GET /pratos/calorias?max=-1 - parâmetro inválido (400)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status 400\", () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/pratos/calorias?max=-1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "pratos",
+            "calorias"
+          ],
+          "query": [
+            {
+              "key": "max",
+              "value": "-1"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "idVegano",
+      "value": ""
+    },
+    {
+      "key": "idFitness",
+      "value": ""
+    },
+    {
+      "key": "idSobremesa",
+      "value": ""
+    }
+  ]
+}
