@@ -6,7 +6,14 @@ API REST de delivery de comida saudável feita com Spring Boot e PostgreSQL.
 
 Requisitos: **Java 17 ou superior** e **PostgreSQL**.
 
-**1. Banco de dados** (escolha uma opção)
+**1. Baixar o projeto**
+
+```bash
+git clone https://github.com/MarcusVinicius44/nutri-express.git
+cd nutri-express
+```
+
+**2. Banco de dados** (escolha uma opção)
 
 - **Docker:**
   ```bash
@@ -14,11 +21,11 @@ Requisitos: **Java 17 ou superior** e **PostgreSQL**.
   ```
 - **PostgreSQL instalado no computador:** a aplicação conecta em `localhost:5432`, banco `postgres`, usuário `postgres`, senha `postgres`. Se a sua senha for outra, defina a variável `DB_PASSWORD` antes de rodar (no PowerShell: `$env:DB_PASSWORD="sua_senha"`).
 
-**2. Aplicação** (na pasta do projeto)
+**3. Aplicação** (na pasta do projeto)
 
 ```bash
 ./mvnw spring-boot:run      # Linux/macOS
-mvnw.cmd spring-boot:run    # Windows
+.\mvnw.cmd spring-boot:run  # Windows (PowerShell)
 ```
 
 A API sobe em `http://localhost:8080`, e a tabela `pratos` é criada automaticamente.
@@ -56,6 +63,12 @@ A API sobe em `http://localhost:8080`, e a tabela `pratos` é criada automaticam
 
 - `categoria`: `vegano`, `low carb`, `fitness` ou `sobremesa saudável`.
 - `unidadeMedida`: `g` ou `ml`.
+
+**Exemplo de corpo (PATCH `/pratos/{id}/valor`):**
+
+```json
+{ "valor": 27.00 }
+```
 
 ## Testes
 
